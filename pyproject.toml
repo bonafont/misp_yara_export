@@ -2,9 +2,9 @@
 name = "projet_misp"
 version = "0.1.0"
 description = "Setup MISP yara export environment"
-
+authors = ["Bonaf"]
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 pymisp = "^2.4.135"
 yara-python = "^4.0.2"
 
