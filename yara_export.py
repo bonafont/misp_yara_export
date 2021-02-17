@@ -4,6 +4,8 @@ import pymisp
 import keys
 import logging
 import json
+import re
+
 
 # dump json to file
 def dumpjson(to_dump):
@@ -25,7 +27,7 @@ def generateyara(events):
         text += "rule event_id_" + event["event_id"] + " {\n\n"
 
         text += "\tmeta:\n"
-        text += "\t\tdescription = \"" + event["info"] + "\"\n"
+        text += "\t\tdescription = \"" + re.sub(r'[\\/*?:"<>|]',"",event["info"]) + "\"\n" #remove any illegal chars
 
         hashes = event["Hashes"] # Retrieve the Hashes dictionnary
 
@@ -87,7 +89,8 @@ for event in events: # For each event
                 if attribute["type"] not in hashes_types :
                     hashes_types.update({ attribute["type"]: [ attribute["value"] ] } )
                 else :
-                    hashes_types[attribute["type"]].append(attribute["value"])
+                    if attribute["value"] not in hashes_types[attribute["type"]] : # If hash already in list, ignore
+                        hashes_types[attribute["type"]].append(attribute["value"])
             
         event_dict.update({"Hashes": hashes_types})
     if event_dict["Hashes"] :
