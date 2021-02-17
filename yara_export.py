@@ -20,29 +20,26 @@ logging.basicConfig(level=logging.DEBUG, filename="debug.log", filemode='w', for
 
 misp = pymisp.PyMISP(keys.misp_url,keys.misp_key,False,False)
 
-events = misp.search(controller='events',limit=2)
+events = misp.search(controller='events')
 
-liste = []
-dicte = {}
+events_hashes = []
 
 for event in events: # For each event
     for event_content in event.values(): # Get the content of the key "Event"
-        has_signature = False
+        hashes_types = {}
+        event_dict = {"event_id": event_content["id"]}
+        event_dict.update({"info": event_content["info"]})
         for attribute in event_content["Attribute"]: # For each attribute from a event
             if attribute["type"] == "md5" or attribute["type"] == "sha1" or attribute["type"] == "sha256" :
-                has_signature = True
-                #if dicte.has_key(attribute["type"])
-                dicte.update({attribute["type"]: attribute["value"]})
-        #if has_signature == True:
-            #print("Event",event_content["id"], "has signature")
+                if attribute["type"] not in hashes_types :
+                    hashes_types.update({ attribute["type"]: [ attribute["value"] ] } )
+                else :
+                    hashes_types[attribute["type"]].append(attribute["value"])
+            
+        event_dict.update({"Hashes": hashes_types})
+    if event_dict["Hashes"] :
+        events_hashes.append(event_dict)
+        
+dumpjson(events_hashes)
 
-#print(liste)
-json.dump(dicte,sys.stdout,indent=4)
-#
-#res = res["Event"]["id"]
-#res = res[0]
-#print(res[0]
-#file = open("misp.json",'w')
-#json.dump(res,file,indent=4)
-#file.close()
 
