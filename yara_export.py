@@ -20,7 +20,10 @@ logging.basicConfig(level=logging.DEBUG, filename="debug.log", filemode='w', for
 
 misp = pymisp.PyMISP(keys.misp_url,keys.misp_key,False,False)
 
-events = misp.search(controller='events',limit=100)
+events = misp.search(controller='events',limit=2)
+
+liste = []
+dicte = {}
 
 for event in events: # For each event
     for event_content in event.values(): # Get the content of the key "Event"
@@ -28,12 +31,13 @@ for event in events: # For each event
         for attribute in event_content["Attribute"]: # For each attribute from a event
             if attribute["type"] == "md5" or attribute["type"] == "sha1" or attribute["type"] == "sha256" :
                 has_signature = True
-                print(attribute["type"],":",attribute["value"])
-                break
-        if has_signature == True:
-            print("Event",event_content["id"], "has signature")
+                #if dicte.has_key(attribute["type"])
+                dicte.update({attribute["type"]: attribute["value"]})
+        #if has_signature == True:
+            #print("Event",event_content["id"], "has signature")
 
-
+#print(liste)
+json.dump(dicte,sys.stdout,indent=4)
 #
 #res = res["Event"]["id"]
 #res = res[0]
