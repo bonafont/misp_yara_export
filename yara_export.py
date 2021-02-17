@@ -4,25 +4,78 @@ import pymisp
 import keys
 import logging
 import json
-import time
-import sys
 
 # dump json to file
 def dumpjson(to_dump):
-    file = open("test.json",'w')
+    file = open("text.json",'w')
     json.dump(to_dump,file,indent=4)
     file.close()
+
+def writetofile(content,file):
+    file = open(file,"w")
+    file.write(content)
+    file.close()
+
+
+def generateyara(events):
+
+    text = "import \"hash\"\n\n"
+
+    for event in events:    # For each event
+        text += "rule event_id_" + event["event_id"] + " {\n\n"
+
+        text += "\tmeta:\n"
+        text += "\t\tdescription = \"" + event["info"] + "\"\n"
+
+        hashes = event["Hashes"] # Retrieve the Hashes dictionnary
+
+        text += "\n\tcondition:\n"
+
+        for hash_type,hash_list in hashes.items():  # Get the list of hashes for a specific type
+            for _hash in hash_list: # Retrives a hash from the hash_list
+                text += "\t\thash."+ hash_type +"(0,filesize) == \"" + _hash + "\""
+                if hash_list[-1] == _hash and list(hashes.keys())[-1] == hash_type : # If this is the last hash to be generated for this event ignore the 'or'
+                    text += "\n"
+                else:
+                    text += " or \n"
+
+        text += "}\n"
+
+    # Remove non-ascii characters
+    text = text.encode("ascii", "ignore")
+    text = text.decode()
+    return text
+
+"""  TO BE REMOVED !
+
+        if 'md5' in hashes :
+            for md5_hashes in hashes["md5"]:
+                if md5_hashes == hashes["md5"][-1] :
+                    text += "\t\thash.md5(0,filesize) == \"" + md5_hashes + "\"\n"
+                else:
+                    text += "\t\thash.md5(0,filesize) == \"" + md5_hashes + "\" or \n"
+
+
+        
+
+        text += "}\n"
+
+    return text
+"""
 
 # Set logger
 logger = logging.getLogger('pymisp')
 logger.setLevel(logging.INFO)
 logging.basicConfig(level=logging.DEBUG, filename="debug.log", filemode='w', format=pymisp.FORMAT)
+events_hashes = []
+
+
 
 misp = pymisp.PyMISP(keys.misp_url,keys.misp_key,False,False)
 
 events = misp.search(controller='events')
 
-events_hashes = []
+
 
 for event in events: # For each event
     for event_content in event.values(): # Get the content of the key "Event"
@@ -39,7 +92,12 @@ for event in events: # For each event
         event_dict.update({"Hashes": hashes_types})
     if event_dict["Hashes"] :
         events_hashes.append(event_dict)
-        
+
 dumpjson(events_hashes)
+
+yara = generateyara(events_hashes)
+writetofile(yara,"text.yara")
+exit()
+
 
 
