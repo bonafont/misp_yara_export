@@ -5,11 +5,12 @@ import keys
 import logging
 import json
 import re
+import sys
 
 
 # dump json to file
-def dumpjson(to_dump):
-    file = open("text.json",'w')
+def dumpjson(to_dump,namefile):
+    file = open(namefile,'w')
     json.dump(to_dump,file,indent=4)
     file.close()
 
@@ -71,13 +72,20 @@ logger.setLevel(logging.INFO)
 logging.basicConfig(level=logging.DEBUG, filename="debug.log", filemode='w', format=pymisp.FORMAT)
 events_hashes = []
 
+if len(keys.misp_url) == 0 or len(keys.misp_key) == 0:
+    print("Error: missing info about MISP database, please check keys.py file !")
+    exit(-1) 
 
+if "-h" in sys.argv or sys.argv[-1][0] == '-' or len(sys.argv) < 2 or ".yara" in sys.argv:
+    print("Command : yara_export.py [-h : show help] [-json : add a json dump along with yara dump] <yara output filename>")
+    exit(0)
+
+if ".yara" in sys.argv[-1]:
+    sys.argv[-1] = sys.argv[-1].replace(".yara","")
 
 misp = pymisp.PyMISP(keys.misp_url,keys.misp_key,False,False)
 
 events = misp.search(controller='events')
-
-
 
 for event in events: # For each event
     for event_content in event.values(): # Get the content of the key "Event"
@@ -96,10 +104,14 @@ for event in events: # For each event
     if event_dict["Hashes"] :
         events_hashes.append(event_dict)
 
-dumpjson(events_hashes)
+if "-json" in sys.argv:
+    print("Dumping json")
+    dumpjson(events_hashes,sys.argv[-1] + ".json")
 
 yara = generateyara(events_hashes)
-writetofile(yara,"text.yara")
+print (" Dumping yara to : " + sys.argv[-1] + ".yara")
+writetofile(yara,sys.argv[-1]+ ".yara")
+print ("Dump Finished")
 exit()
 
 
