@@ -5,6 +5,8 @@ Export MISP file signatures into yara files
 
 ```Command : yara_export.py [-h : show help] [-json : add a json dump along with yara dump] <yara output filename>```
 
+The file keys.py should contain all the necessary information to connect to a MISP database
+
 ## Example :
 
 Export only to yara :
@@ -18,5 +20,6 @@ Export to yara along with a json dump :
 ``` python yara_export.py -json dump.yara ``` 
 
 This command is the same as the one above + export to a json file format
+
 
 
