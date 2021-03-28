@@ -9,10 +9,12 @@ Example :
 
 Export only to yara :
 ```python yara_export.py dump.yara ``` 
+
 This command will dump all the MD5 SHA1 SHA256 signatures from the MISP database to a yara dump.
 
 Export to yara along with a json dump
 ``` python yara_export.py -json dump.yara ``` 
+
 This command is the same as the one above + export to a json file format
 
 
