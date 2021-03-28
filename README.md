@@ -1,5 +1,5 @@
-# misp_yara_export
-Export MISP file signatures into yara files
+# Misp yara export
+Export MISP file signatures into a yara file
 
 ## Usage :
 
