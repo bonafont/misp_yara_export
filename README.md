@@ -1,6 +1,14 @@
 # Misp yara export
 Export MISP file signatures into a yara file
 
+## Dependencies
+
+The usage of poetry for this program is highly encouraged in order to resolve any dependency errors.
+
+The command ``` poetry install``` will install all the necessary dependencies.
+
+The command ``` poetry shell``` will spawn a shell with all the dependencies loaded.
+
 ## Usage :
 
 ```Command : yara_export.py [-h : show help] [-json : add a json dump along with yara dump] <yara output filename>```
@@ -11,7 +19,7 @@ The file keys.py should contain all the necessary information to connect to a MI
 
 Export only to yara :
 
-```python yara_export.py dump.yara ``` 
+```poet yara_export.py dump.yara ``` 
 
 This command will dump all the MD5 SHA1 SHA256 signatures from the MISP database to a yara dump.
 
