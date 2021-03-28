@@ -1,11 +1,11 @@
 # misp_yara_export
 Export MISP file signatures into yara files
 
-Usage :
+##Usage :
 
 ```Command : yara_export.py [-h : show help] [-json : add a json dump along with yara dump] <yara output filename>```
 
-Example :
+##Example :
 
 Export only to yara :
 ```python yara_export.py dump.yara ``` 
