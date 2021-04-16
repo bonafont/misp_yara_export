@@ -19,7 +19,7 @@ The file keys.py should contain all the necessary information to connect to a MI
 
 Export only to yara :
 
-```poet yara_export.py dump.yara ``` 
+```python yara_export.py dump.yara ``` 
 
 This command will dump all the MD5 SHA1 SHA256 signatures from the MISP database to a yara dump.
 
